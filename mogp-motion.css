@@ -1,0 +1,274 @@
+/* =========================================================
+   MOGP Motion
+   CSS-only scroll-driven motion system
+
+   Philosophy: Sensible Defaults, Optional Customization
+   "Make it work first, customize later."
+
+   ─────────────────────────────────────────────────────────
+   LEVEL 1 — Minimal usage (no extra attributes needed)
+   ─────────────────────────────────────────────────────────
+   <div data-mogp-motion="fade"></div>
+   <div data-mogp-motion="scale-up"></div>
+   <div data-mogp-motion="slide-up"></div>
+   <div data-mogp-motion="slide-down"></div>
+
+   ─────────────────────────────────────────────────────────
+   LEVEL 2 — Optional customization
+   ─────────────────────────────────────────────────────────
+   data-mogp-motion-start="10"
+   Where the animation begins, expressed as a percentage of
+   the element's total time on screen (0% = element begins
+   entering the viewport, 100% = element has fully exited).
+   Default: 10. Supported values: 0, 5, 10 ... 95, 100 (multiples of 5 only)
+
+   data-mogp-motion-end="50"
+   Where the animation finishes, on the same 0–100 scale as
+   data-mogp-motion-start. After this point the element stays
+   static until it exits the viewport.
+   Default: 50. Supported values: 0, 5, 10 ... 95, 100 (multiples of 5 only)
+
+   data-mogp-scale-start="70"
+   The element's starting size, as a percentage of its final
+   size, for the scale-up animation. The value IS the visual
+   starting scale — no inversion, no extra math.
+   Default: 70. Supported values: 90, 80, 70, 60, 50
+   (90 = subtlest effect, 50 = strongest effect)
+   Note: has no effect on fade animations.
+
+   data-mogp-slide-distance="50"   → 50px  ← default
+   Supported values: 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150
+   Note: only affects slide-up and slide-down animations.
+
+   data-mogp-motion-will-change
+   Opt-in only. Excessive use increases memory usage.
+
+   ─────────────────────────────────────────────────────────
+   Browser support
+   ─────────────────────────────────────────────────────────
+   Browsers without scroll-driven animation support
+   show content normally (progressive enhancement).
+   ========================================================= */
+
+
+/* =========================================================
+   SCROLL-DRIVEN MOTION
+   ========================================================= */
+
+@supports ((animation-timeline: view()) and (animation-range: entry 0% exit 100%)) {
+
+  /* ---
+     Base: shared animation config + sensible defaults.
+     All attributes are optional — omitting them falls back
+     to these values automatically.
+
+     Both range-start and range-end use the "cover" named
+     range (0% = element begins entering the viewport,
+     100% = element has fully exited). Using the same named
+     range for both endpoints keeps --mogp-start and
+     --mogp-end on one consistent, size-independent scale.
+
+     animation-range-start and animation-range-end are used
+     as separate properties instead of the animation-range
+     shorthand. The shorthand does not reliably accept CSS
+     custom properties (Chromium bug #335473).
+
+     --mogp-scale now holds the element's starting size
+     directly (e.g. 0.70 = starts at 70% size), so the
+     scale-up keyframe below assigns it straight to `scale`
+     with no calc() inversion.
+  --- */
+  :where([data-mogp-motion]) {
+    --mogp-start:    10%;
+    --mogp-end:      50%;
+    --mogp-scale:    0.70;
+    --mogp-distance: 50px;
+
+    animation-duration:        1ms;
+    animation-timing-function: linear;
+    animation-fill-mode:       both;
+    animation-timeline:        view();
+    animation-range-start:     cover var(--mogp-start);
+    animation-range-end:       cover var(--mogp-end);
+  }
+
+  /* ---
+     will-change: opt-in only.
+     Use sparingly — excessive use increases memory usage.
+  --- */
+  :where([data-mogp-motion][data-mogp-motion-will-change]) {
+    will-change: opacity, scale, translate;
+  }
+
+
+  /* -------------------------------------------------------
+     MOTION-START TOKENS
+     Override --mogp-start when present.
+     Percentage of the element's total time on screen at
+     which the animation begins. Omitting the attribute uses
+     the default (10%). Supported values: multiples of 5,
+     from 0 to 100.
+  ------------------------------------------------------- */
+
+  :where([data-mogp-motion-start="0"])   { --mogp-start:   0%; }
+  :where([data-mogp-motion-start="5"])   { --mogp-start:   5%; }
+  :where([data-mogp-motion-start="10"])  { --mogp-start:  10%; }
+  :where([data-mogp-motion-start="15"])  { --mogp-start:  15%; }
+  :where([data-mogp-motion-start="20"])  { --mogp-start:  20%; }
+  :where([data-mogp-motion-start="25"])  { --mogp-start:  25%; }
+  :where([data-mogp-motion-start="30"])  { --mogp-start:  30%; }
+  :where([data-mogp-motion-start="35"])  { --mogp-start:  35%; }
+  :where([data-mogp-motion-start="40"])  { --mogp-start:  40%; }
+  :where([data-mogp-motion-start="45"])  { --mogp-start:  45%; }
+  :where([data-mogp-motion-start="50"])  { --mogp-start:  50%; }
+  :where([data-mogp-motion-start="55"])  { --mogp-start:  55%; }
+  :where([data-mogp-motion-start="60"])  { --mogp-start:  60%; }
+  :where([data-mogp-motion-start="65"])  { --mogp-start:  65%; }
+  :where([data-mogp-motion-start="70"])  { --mogp-start:  70%; }
+  :where([data-mogp-motion-start="75"])  { --mogp-start:  75%; }
+  :where([data-mogp-motion-start="80"])  { --mogp-start:  80%; }
+  :where([data-mogp-motion-start="85"])  { --mogp-start:  85%; }
+  :where([data-mogp-motion-start="90"])  { --mogp-start:  90%; }
+  :where([data-mogp-motion-start="95"])  { --mogp-start:  95%; }
+  :where([data-mogp-motion-start="100"]) { --mogp-start: 100%; }
+
+
+  /* -------------------------------------------------------
+     MOTION-END TOKENS
+     Override --mogp-end when present.
+     Percentage of the element's total time on screen at
+     which the animation finishes. After this point the
+     element stays static until it exits the viewport.
+     Omitting the attribute uses the default (50%).
+     Supported values: multiples of 5, from 0 to 100.
+  ------------------------------------------------------- */
+
+  :where([data-mogp-motion-end="0"])   { --mogp-end:   0%; }
+  :where([data-mogp-motion-end="5"])   { --mogp-end:   5%; }
+  :where([data-mogp-motion-end="10"])  { --mogp-end:  10%; }
+  :where([data-mogp-motion-end="15"])  { --mogp-end:  15%; }
+  :where([data-mogp-motion-end="20"])  { --mogp-end:  20%; }
+  :where([data-mogp-motion-end="25"])  { --mogp-end:  25%; }
+  :where([data-mogp-motion-end="30"])  { --mogp-end:  30%; }
+  :where([data-mogp-motion-end="35"])  { --mogp-end:  35%; }
+  :where([data-mogp-motion-end="40"])  { --mogp-end:  40%; }
+  :where([data-mogp-motion-end="45"])  { --mogp-end:  45%; }
+  :where([data-mogp-motion-end="50"])  { --mogp-end:  50%; }
+  :where([data-mogp-motion-end="55"])  { --mogp-end:  55%; }
+  :where([data-mogp-motion-end="60"])  { --mogp-end:  60%; }
+  :where([data-mogp-motion-end="65"])  { --mogp-end:  65%; }
+  :where([data-mogp-motion-end="70"])  { --mogp-end:  70%; }
+  :where([data-mogp-motion-end="75"])  { --mogp-end:  75%; }
+  :where([data-mogp-motion-end="80"])  { --mogp-end:  80%; }
+  :where([data-mogp-motion-end="85"])  { --mogp-end:  85%; }
+  :where([data-mogp-motion-end="90"])  { --mogp-end:  90%; }
+  :where([data-mogp-motion-end="95"])  { --mogp-end:  95%; }
+  :where([data-mogp-motion-end="100"]) { --mogp-end: 100%; }
+
+
+  /* -------------------------------------------------------
+     SCALE-START TOKENS
+     Override --mogp-scale when present.
+     The value IS the starting size percentage — assigned
+     directly to --mogp-scale, no inversion needed.
+     Omitting the attribute uses the default (0.70 = 70%).
+     Has no effect on fade animations.
+  ------------------------------------------------------- */
+
+  :where([data-mogp-scale-start="90"]) { --mogp-scale: 0.90; }
+  :where([data-mogp-scale-start="80"]) { --mogp-scale: 0.80; }
+  :where([data-mogp-scale-start="70"]) { --mogp-scale: 0.70; }
+  :where([data-mogp-scale-start="60"]) { --mogp-scale: 0.60; }
+  :where([data-mogp-scale-start="50"]) { --mogp-scale: 0.50; }
+
+
+  /* -------------------------------------------------------
+     SLIDE-DISTANCE TOKENS
+     Override --mogp-distance when present.
+     Omitting the attribute uses the default (50px).
+     Only affects slide-up and slide-down animations.
+  ------------------------------------------------------- */
+
+  :where([data-mogp-slide-distance="30"])  { --mogp-distance:  30px; }
+  :where([data-mogp-slide-distance="40"])  { --mogp-distance:  40px; }
+  :where([data-mogp-slide-distance="50"])  { --mogp-distance:  50px; }
+  :where([data-mogp-slide-distance="60"])  { --mogp-distance:  60px; }
+  :where([data-mogp-slide-distance="70"])  { --mogp-distance:  70px; }
+  :where([data-mogp-slide-distance="80"])  { --mogp-distance:  80px; }
+  :where([data-mogp-slide-distance="90"])  { --mogp-distance:  90px; }
+  :where([data-mogp-slide-distance="100"]) { --mogp-distance: 100px; }
+  :where([data-mogp-slide-distance="110"]) { --mogp-distance: 110px; }
+  :where([data-mogp-slide-distance="120"]) { --mogp-distance: 120px; }
+  :where([data-mogp-slide-distance="130"]) { --mogp-distance: 130px; }
+  :where([data-mogp-slide-distance="140"]) { --mogp-distance: 140px; }
+  :where([data-mogp-slide-distance="150"]) { --mogp-distance: 150px; }
+
+
+  /* -------------------------------------------------------
+     MOTION TYPE → ANIMATION NAME
+  ------------------------------------------------------- */
+
+  :where([data-mogp-motion="fade"])       { animation-name: mogp-fade; }
+  :where([data-mogp-motion="scale-up"])   { animation-name: mogp-scale-up; }
+  :where([data-mogp-motion="slide-up"])   { animation-name: mogp-slide-up; }
+  :where([data-mogp-motion="slide-down"]) { animation-name: mogp-slide-down; }
+
+}
+
+
+/* =========================================================
+   FALLBACK
+
+   Browsers without scroll-driven animation support
+   show content normally (progressive enhancement).
+   ========================================================= */
+
+@supports not ((animation-timeline: view()) and (animation-range: entry 0% exit 100%)) {
+  :where([data-mogp-motion]) {
+    animation: none;
+    opacity: 1;
+    scale: none;
+  }
+}
+
+
+/* =========================================================
+   KEYFRAMES
+   ========================================================= */
+
+@keyframes mogp-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes mogp-scale-up {
+  from { opacity: 0; scale: var(--mogp-scale); }
+  to   { opacity: 1; scale: 1; }
+}
+
+@keyframes mogp-slide-up {
+  from { opacity: 0; translate: 0 var(--mogp-distance); }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+@keyframes mogp-slide-down {
+  from { opacity: 0; translate: 0 calc(var(--mogp-distance) * -1); }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+   Respects user's motion preference.
+   Content remains fully visible — no layout shift.
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  :where([data-mogp-motion]) {
+    animation-name:     none;
+    animation-timeline: auto;
+    opacity:            1;
+    scale:              none;
+    translate:          none;
+  }
+}
