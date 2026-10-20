@@ -166,7 +166,7 @@ The system automatically respects the user's OS-level "reduce motion" (`prefers-
 
 ## Browser support
 
-The system works fully in browsers that support `animation-timeline: view()` (current Chrome, Edge, Opera, and other Chromium-based browsers).
+The system works fully in browsers that support `animation-timeline: view()`: Chromium-based browsers (Chrome, Edge, Opera; 115+) and Safari 26+. Firefox support is behind a flag at the time of writing.
 
 In unsupported browsers (the `@supports not (...)` block takes over), no animation is applied — elements are fully opaque and in their normal position from the start. In other words, a user on an unsupported browser sees no missing content or broken layout — the animation effect simply doesn't happen.
 
@@ -193,6 +193,8 @@ In browsers not listed there, or without support, the system automatically falls
 **Live demo:** [withmehmet.github.io/mogp-motion](https://withmehmet.github.io/mogp-motion/)
 
 Or open the `index.html` file in the repo in a browser to explore all animation types and parameter combinations locally.
+
+The demo page uses [Public Sans](https://github.com/uswds/public-sans) and [IBM Plex Mono](https://github.com/IBM/plex), bundled in `fonts/` (no external requests). Both are licensed under the SIL Open Font License 1.1; see the `OFL.txt` file in each font's folder. The fonts are not part of the MOGP library.
 
 ## Why CSS-only?
 
